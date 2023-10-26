@@ -3,14 +3,14 @@ version: "3"
 services:
   zookeeper:
     image: zookeeper:latest
-    container_name: zookeeper-go-vs-faust
+    container_name: zookeeper
     ports:
       - 2181:2181
     restart: "no"
 
   kafka:
     image: confluentinc/cp-kafka:latest
-    container_name: kafka-go-vs-faust
+    container_name: kafka
     depends_on:
       - zookeeper
     ports:
@@ -40,7 +40,7 @@ services:
 
   init-kafka:
     image: confluentinc/cp-kafka:latest
-    container_name: init-kafka-go-vs-faust
+    container_name: init-kafka
     depends_on:
       - kafka
     command: "bash -c 'echo Create topics ... && \
@@ -49,19 +49,19 @@ services:
       kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic mt-raw-request --partitions 1 && \ 
       kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --topic mt-raw-request-updated --partitions 1'"
 
-  kafka-ui:
-    image: provectuslabs/kafka-ui:master
-    container_name: kafka-ui
-    environment:
-      KAFKA_CLUSTERS_0_NAME: local_containers
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-go-vs-faust:9092'
-    restart: "no"
-    ports:
-      - "7070:8080"
-    depends_on:
-      - kafka
-      - init-kafka
-      - zookeeper
+  # kafka-ui:
+  #   image: provectuslabs/kafka-ui:master
+  #   container_name: kafka-ui
+  #   environment:
+  #     KAFKA_CLUSTERS_0_NAME: local_containers
+  #     KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka:9092'
+  #   restart: "no"
+  #   ports:
+  #     - "7070:8080"
+  #   depends_on:
+  #     - kafka
+  #     - init-kafka
+  #     - zookeeper
 
 
 
@@ -77,54 +77,53 @@ services:
   #     - kafka
   #     - zookeeper
 
-  fastapi_collector_uvloop:
-    image: fastapi_collector_uvloop:latest
-    container_name: fastapi_collector_uvloop
-    environment:
-      VAR: VALUE
-    restart: "no"
-    ports:
-      - "5006:5006"
-    depends_on:
-      - kafka
-      - zookeeper
-
-  faust_sender:
-    image: faust_sender:latest
-    container_name: faust_sender
-    environment:
-      VAR: VALUE
-    restart: "no"
-    ports:
-      - "6050:6050"
-    depends_on:
-      - kafka
-      - init-kafka
-      - zookeeper
-    command: ["./wait-for-it.sh", "kafka-go-vs-faust:5432", "--", "./faust-sender.sh"]
-
-
-
-  # go_collector:
-  #   image: go_collector:latest
-  #   container_name: go_collector
+  # fastapi_collector_uvloop:
+  #   image: fastapi_collector_uvloop:latest
+  #   container_name: fastapi_collector_uvloop
   #   environment:
   #     VAR: VALUE
   #   restart: "no"
   #   ports:
-  #     - "5005:5005"
+  #     - "5006:5006"
+  #   depends_on:
+  #     - kafka
+  #     - zookeeper
+
+  # faust_sender:
+  #   image: faust_sender:latest
+  #   container_name: faust_sender
+  #   environment:
+  #     VAR: VALUE
+  #   restart: "no"
+  #   ports:
+  #     - "6050:6050"
   #   depends_on:
   #     - kafka
   #     - init-kafka
   #     - zookeeper
-  #   command: ["./wait-and-start.sh"]
-  #   # when using container with bash
-  #   # command: ["./wait-for-it.sh", "kafka-go-vs-faust:5432", "--", "./go-collector"]
+  #   command: ["./wait-for-it.sh", "kafka:5432", "--", "./faust-sender.sh"]
 
 
-  # go_sender:
-  #   image: go_sender:latest
-  #   container_name: go_sender
+
+  goka_sarama_collector:
+    image: goka_sarama_collector:latest
+    container_name: goka_sarama_collector
+    environment:
+      VAR: VALUE
+    restart: "no"
+    ports:
+      - "5005:5005"
+    depends_on:
+      - kafka
+      - init-kafka
+      - zookeeper
+    command: ["./wait-and-start.sh"]
+    # when using container with bash
+    # command: ["./wait-for-it.sh", "kafka:5432", "--", "./goka-sarama-collector"]
+
+  # goka_sarama_sender:
+  #   image: goka_sarama_sender:latest
+  #   container_name: goka_sarama_sender
   #   environment:
   #     VAR: VALUE
   #   restart: "no"
@@ -134,29 +133,27 @@ services:
   #     - zookeeper
   #   command: ["./wait-and-start.sh"]
   #   # when using container with bash
-  #   # command: ["./wait-for-it.sh", "kafka-go-vs-faust:5432", "--", "./go-sender"]
+  #   # command: ["./wait-for-it.sh", "kafka:5432", "--", "./goka-sarama-sender"]
+
+  franz_sender:
+    image: franz_sender:latest
+    container_name: franz_sender
+    environment:
+      VAR: VALUE
+    restart: "no"
+    depends_on:
+      - kafka
+      - init-kafka
+      - zookeeper
+    command: ["./wait-and-start.sh"]
+    # when using container with bash
+    # command: ["./wait-for-it.sh", "kafka:5432", "--", "./franz-sender"]
 
 
 
-  # go_franz_sender:
-  #   image: go_franz_sender:latest
-  #   container_name: go_franz_sender
-  #   environment:
-  #     VAR: VALUE
-  #   restart: "no"
-  #   depends_on:
-  #     - kafka
-  #     - init-kafka
-  #     - zookeeper
-  #   command: ["./wait-and-start.sh"]
-  #   # when using container with bash
-  #   # command: ["./wait-for-it.sh", "kafka-go-vs-faust:5432", "--", "./go-franz-sender"]
-
-
-
-  # go_grpc_collector:
-  #   image: go_grpc_collector:latest
-  #   container_name: go_grpc_collector
+  # librd_grpc_collector:
+  #   image: librd_grpc_collector:latest
+  #   container_name: librd_grpc_collector
   #   environment:
   #     VAR: VALUE
   #   restart: "no"
@@ -168,7 +165,7 @@ services:
   #     - zookeeper
   #   command: ["./wait-and-start.sh"]
   #   # when using container with bash
-  #   # command: ["./wait-for-it.sh", "kafka-go-vs-faust:5432", "--", "./go-grpc-collector"]
+  #   # command: ["./wait-for-it.sh", "kafka:5432", "--", "./librd-grpc-collector"]
 
 
 
