@@ -1,0 +1,14 @@
+syntax = "proto3";
+package go_grpc_collector_proto;
+option go_package = "./go_grpc_collector_proto";
+import "common/proto/rawevent.proto";
+
+
+message Response {
+    string status = 1;
+    string event_name = 2;
+}
+
+service CollectorService {
+    rpc PostRawEvent(RawEvent) returns (Response) {}
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+package go_grpc_collector_proto;
+option go_package = "./go_grpc_collector_proto";
+
+message RawEvent {
+    string source = 1;
+    string event_name = 2;
+    string event_status = 3;
+    string created = 4;
+    string payout = 5;
+}
