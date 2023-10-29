@@ -64,6 +64,7 @@ services:
   #     - zookeeper
 
 
+  ###### pythonic collectors
 
   # fastapi_collector:
   #   image: fastapi_collector:latest
@@ -89,6 +90,9 @@ services:
   #     - kafka
   #     - zookeeper
 
+
+  ###### pythonic senders
+
   # faust_sender:
   #   image: faust_sender:latest
   #   container_name: faust_sender
@@ -104,6 +108,7 @@ services:
   #   command: ["./wait-for-it.sh", "kafka:5432", "--", "./faust-sender.sh"]
 
 
+  ###### go collectors
 
   # goka_sarama_collector:
   #   image: goka_sarama_collector:latest
@@ -118,8 +123,59 @@ services:
   #     - init-kafka
   #     - zookeeper
   #   command: ["./wait-and-start.sh"]
+  #  # when using container with bash
+  #  # command: ["./wait-for-it.sh", "kafka:5432", "--", "./goka-sarama-collector"]
+
+  # grpc_librd_collector:
+  #   image: grpc_librd_collector:latest
+  #   container_name: grpc_librd_collector
+  #   environment:
+  #     VAR: VALUE
+  #   restart: "no"
+  #   ports:
+  #     - "5006:5006"
+  #   depends_on:
+  #     - kafka
+  #     - init-kafka
+  #     - zookeeper
+  #   command: ["./wait-and-start.sh"]
   #   # when using container with bash
-  #   # command: ["./wait-for-it.sh", "kafka:5432", "--", "./goka-sarama-collector"]
+  #   # command: ["./wait-for-it.sh", "kafka:5432", "--", "./grpc-librd-collector"]
+
+  # librd_collector:
+  #   image: librd_collector:latest
+  #   container_name: librd_collector
+  #   environment:
+  #     VAR: VALUE
+  #   restart: "no"
+  #   ports:
+  #     - "5005:5005"
+  #   depends_on:
+  #     - kafka
+  #     - init-kafka
+  #     - zookeeper
+  #   command: ["./wait-and-start.sh"]
+  #  # when using container with bash
+  #  # command: ["./wait-for-it.sh", "kafka:5432", "--", "./librd-collector"]
+
+  franz_collector:
+    image: franz_collector:latest
+    container_name: franz_collector
+    environment:
+      VAR: VALUE
+    restart: "no"
+    ports:
+      - "5005:5005"
+    depends_on:
+      - kafka
+      - init-kafka
+      - zookeeper
+    command: ["./wait-and-start.sh"]
+    # when using container with bash
+    # command: ["./wait-for-it.sh", "kafka:5432", "--", "./franz-collector"]
+
+
+  ###### go senders
 
   # goka_sarama_sender:
   #   image: goka_sarama_sender:latest
@@ -149,24 +205,17 @@ services:
     # when using container with bash
     # command: ["./wait-for-it.sh", "kafka:5432", "--", "./franz-sender"]
 
-  grpc_librd_collector:
-    image: grpc_librd_collector:latest
-    container_name: grpc_librd_collector
-    environment:
-      VAR: VALUE
-    restart: "no"
-    ports:
-      - "5006:5006"
-    depends_on:
-      - kafka
-      - init-kafka
-      - zookeeper
-    command: ["./wait-and-start.sh"]
-    # when using container with bash
-    # command: ["./wait-for-it.sh", "kafka:5432", "--", "./grpc-librd-collector"]
-
-
-
-
-
+  # librd_sender:
+  #   image: librd_sender:latest
+  #   container_name: librd_sender
+  #   environment:
+  #     VAR: VALUE
+  #   restart: "no"
+  #   depends_on:
+  #     - kafka
+  #     - init-kafka
+  #     - zookeeper
+  #   command: ["./wait-and-start.sh"]
+  #   # when using container with bash
+  #   # command: ["./wait-for-it.sh", "kafka:5432", "--", "./librd-sender"]
 

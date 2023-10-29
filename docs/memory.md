@@ -20,7 +20,6 @@ Comparing REST/http Go service and gRPC/tcp Go service
 
 REST (100 locust users)    
 goka-sarama-collector 10-12% CPU usage, 0.2% memory usage   
-go-sender-franz 12-18% CPU usage, 0.1% memory usage    
 goka-sarama-sender    3% CPU usage, 0.3% memory usage    
 400 RPS    
 
@@ -28,3 +27,11 @@ gRPC (100 locust users via grpc_interceptor)
 grpc-librd-collector 66% CPU usage, 2% memory usage    
 goka-sarama-sender         12-13% CPU usage, 0.3% memory usage    
 3000 RPS    
+
+
+## librd vs franz
+librd-collector 18% CPU usage, 0.4% memory usage    
+librd-sender 6% CPU usage, 0.3% memory usage    
+
+franz-collector 26% CPU usage, 0.1% memory usage    
+franz-sender 22% CPU usage, 0.1% memory usage
